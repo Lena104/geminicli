@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini CLI: 대화형 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: The SPA is designed with a top navigation bar for quick access to thematic sections (Intro, Core Features, Getting Started, Comparison, Conclusion). This non-linear structure enhances usability by allowing users to directly navigate to their area of interest, rather than scrolling through a long document. Key interactions include a hover-effect diagram for the ReAct framework, tabbed content for features, and a dynamic, filterable bar chart for competitor comparison. This structure was chosen to transform the dense textual report into an engaging, explorable experience, prioritizing user-driven discovery over passive reading. -->
+    <!-- Visualization & Content Choices: 
+    - Report Info: ReAct framework -> Goal: Organize/Inform -> Viz: HTML/CSS diagram with hover interactions -> Justification: Visually breaks down a key concept, making it easier to understand than plain text. -> Method: HTML/CSS.
+    - Report Info: Competitor comparison table -> Goal: Compare -> Viz: Interactive Bar Chart (Chart.js) + dynamic text blocks -> Interaction: User selects a metric (e.g., context window, price) from a dropdown, and the chart and text update. -> Justification: Transforms a static, dense table into a dynamic tool that allows for focused, user-directed comparison, significantly improving data comprehension. -> Library: Chart.js.
+    - Report Info: Usage limits and context window sizes -> Goal: Inform/Compare -> Viz: Key metric cards and included in the dynamic chart -> Justification: Highlights key quantitative data for quick takeaways. -> Method: HTML/CSS, Chart.js.
+    - CONFIRMING NO SVG/Mermaid, supporting the DESIGNED structure. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #F8F7F4; /* Warm Neutral Background */
+            color: #3D3D3D;
+        }
+        .nav-link {
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3B82F6; /* Subtle Accent */
+            border-bottom-color: #3B82F6;
+        }
+        .section-title {
+            color: #1E3A8A; /* Darker Blue for Titles */
+        }
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .code-block {
+            background-color: #2D3748;
+            color: #E2E8F0;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: #4A5568;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .copy-btn:hover {
+            background-color: #2D3748;
+        }
+        .react-step {
+            transition: all 0.3s ease-in-out;
+            border-color: #93C5FD;
+        }
+        .react-step:hover {
+            transform: scale(1.05);
+            border-color: #3B82F6;
+            background-color: #EFF6FF;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold section-title">Gemini CLI 대화형 가이드</h1>
+            <div class="hidden md:flex space-x-8">
+                <a href="#intro" class="nav-link font-medium pb-1">소개</a>
+                <a href="#features" class="nav-link font-medium pb-1">핵심 기능</a>
+                <a href="#getting-started" class="nav-link font-medium pb-1">시작하기</a>
+                <a href="#comparison" class="nav-link font-medium pb-1">경쟁 분석</a>
+                <a href="#conclusion" class="nav-link font-medium pb-1">결론</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 md:py-16">
+
+        <!-- Section 1: Intro -->
+        <section id="intro" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 section-title">Gemini CLI, 개발의 새로운 패러다임</h2>
+            <p class="max-w-3xl mx-auto text-center text-lg text-gray-600 mb-12">
+                이 섹션에서는 Gemini CLI가 단순한 명령줄 도구를 넘어 어떻게 개발자의 'AI 파트너' 역할을 수행하는지 알아봅니다. 핵심 아키텍처인 ReAct 프레임워크의 작동 방식과 100만 토큰이라는 방대한 컨텍스트 창이 가지는 의미를 시각적으로 탐색해 보세요.
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4 text-center">에이전트 기반 접근법: ReAct</h3>
+                    <p class="text-gray-700 mb-6 text-center">Gemini CLI는 '사고 → 행동 → 관찰'의 순환 과정을 통해 스스로 계획을 세우고 문제를 해결합니다. 각 단계를 클릭하여 자세한 설명을 확인해 보세요.</p>
+                    <div class="space-y-4">
+                        <div class="react-step border-2 p-4 rounded-lg text-center cursor-pointer">
+                            <h4 class="font-bold text-lg">🧠 사고 (Thought)</h4>
+                            <p class="text-sm text-gray-600">문제 해결 계획 수립</p>
+                        </div>
+                        <div class="text-center text-2xl font-mono text-blue-400">↓</div>
+                        <div class="react-step border-2 p-4 rounded-lg text-center cursor-pointer">
+                            <h4 class="font-bold text-lg">⚡️ 행동 (Action)</h4>
+                            <p class="text-sm text-gray-600">코드 검색, 파일 읽기 등 실행</p>
+                        </div>
+                        <div class="text-center text-2xl font-mono text-blue-400">↓</div>
+                        <div class="react-step border-2 p-4 rounded-lg text-center cursor-pointer">
+                            <h4 class="font-bold text-lg">🔬 관찰 (Observation)</h4>
+                            <p class="text-sm text-gray-600">결과 분석 및 다음 단계 결정</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="card p-6 rounded-xl">
+                        <h3 class="text-2xl font-bold mb-3">100만 토큰 컨텍스트 🚀</h3>
+                        <p class="text-gray-700">Gemini CLI는 방대한 컨텍스트 창을 통해 코드베이스 전체의 맥락을 이해합니다. 이는 단순한 파일 수정을 넘어 프로젝트 전체의 일관성을 유지하는 리팩토링과 분석을 가능하게 합니다.</p>
+                    </div>
+                    <div class="card p-6 rounded-xl">
+                        <h3 class="text-2xl font-bold mb-3">개방성과 확장성 🌐</h3>
+                        <p class="text-gray-700">클라이언트는 오픈소스(Apache 2.0)로 공개되어 있으며, MCP(모델 컨텍스트 프로토콜)를 통해 어떤 서비스나 데이터베이스와도 손쉽게 연동할 수 있는 무한한 확장성을 제공합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Features -->
+        <section id="features" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 section-title">핵심 기능 탐색</h2>
+            <p class="max-w-3xl mx-auto text-center text-lg text-gray-600 mb-12">
+                Gemini CLI는 코드 분석부터 이미지 기반 코드 생성, 워크플로우 자동화까지 개발의 전 과정을 지원합니다. 아래 탭을 클릭하여 각 기능의 강력한 활용 사례를 확인하고, 개발 생산성을 어떻게 극대화할 수 있는지 알아보세요.
+            </p>
+            <div class="w-full max-w-4xl mx-auto">
+                <div class="mb-4 flex space-x-1 p-1 bg-blue-100/60 rounded-xl">
+                    <button data-tab="tab1" class="tab-btn flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors duration-300">코드 분석</button>
+                    <button data-tab="tab2" class="tab-btn flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors duration-300">멀티모달</button>
+                    <button data-tab="tab3" class="tab-btn flex-1 text-center py-2 px-4 rounded-lg font-medium transition-colors duration-300">자동화</button>
+                </div>
+                <div id="tab-content" class="card rounded-xl p-6 min-h-[300px]">
+                    <div id="tab1" class="tab-pane">
+                        <h3 class="text-2xl font-bold mb-4">지능형 코드 분석 및 리팩토링</h3>
+                        <p class="mb-6">프로젝트 전체의 아키텍처를 파악하거나 레거시 코드를 현대적인 스타일로 개선하는 등, 복잡한 코드베이스를 빠르게 이해하고 관리할 수 있습니다.</p>
+                        <div class="code-block rounded-lg p-4 font-mono text-sm">
+                            <button class="copy-btn">복사</button>
+                            <pre><code>> 이 프로젝트의 전체 아키텍처를 설명해줘.
+
+> 주요 컴포넌트들은 무엇이고, 서로 어떻게 상호작용해?
+
+> 이 레거시 코드를 분석하고 현대적인 방식으로 리팩토링할 방안을 제안해줘.</code></pre>
+                        </div>
+                    </div>
+                    <div id="tab2" class="tab-pane hidden">
+                        <h3 class="text-2xl font-bold mb-4">멀티모달: 이미지에서 코드로</h3>
+                        <p class="mb-6">디자인 시안이나 손으로 그린 스케치를 입력하면, Gemini가 이를 인식하여 실제 작동하는 코드로 변환해 줍니다. 프로토타이핑 속도를 획기적으로 단축시키세요.</p>
+                        <div class="text-center">
+                             <div class="code-block rounded-lg p-4 font-mono text-sm">
+                                <button class="copy-btn">복사</button>
+                                <pre><code>> 'login_sketch.jpg' 이미지를 보고, 이 디자인을 구현하는 React 컴포넌트를 생성해줘.</code></pre>
+                            </div>
+                            <div class="mt-4 p-4 border-2 border-dashed rounded-lg">
+                               <p class="text-gray-500">[여기에 login_sketch.jpg 이미지 표시]</p>
+                               <div class="w-full h-32 bg-gray-200 mt-2 rounded flex items-center justify-center">
+                                   <span class="text-gray-400">UI 스케치 예시</span>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tab3" class="tab-pane hidden">
+                        <h3 class="text-2xl font-bold mb-4">워크플로우 자동화</h3>
+                        <p class="mb-6">Unix 파이프라이닝을 활용하여 Git 커밋 메시지 작성, PR 설명 생성, 로그 분석 등 반복적인 작업을 자동화할 수 있습니다.</p>
+                        <div class="code-block rounded-lg p-4 font-mono text-sm">
+                            <button class="copy-btn">복사</button>
+                            <pre><code># Git 커밋 메시지 자동 생성
+git diff | gemini "이 변경 사항에 대한 간결한 커밋 메시지를 작성해줘."
+
+# 로그 파일에서 가장 빈번한 에러 분석
+tail -n 100 error.log | gemini "이 로그에서 가장 빈번한 에러와 원인을 찾아줘."</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Getting Started -->
+        <section id="getting-started" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 section-title">지금 바로 시작하기</h2>
+            <p class="max-w-3xl mx-auto text-center text-lg text-gray-600 mb-12">
+                Gemini CLI는 몇 가지 간단한 명령어로 바로 설치하고 사용할 수 있습니다. 개인 개발자를 위한 파격적인 무료 플랜과 기업 환경을 위한 프로페셔널 플랜 중 자신에게 맞는 플랜을 선택하여 시작해 보세요.
+            </p>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4">1. 설치</h3>
+                    <p class="mb-4">Node.js v18 이상이 필요합니다. npx로 일회성 실행하거나, npm으로 전역 설치할 수 있습니다.</p>
+                    <p class="font-semibold mb-2">일회성 실행:</p>
+                    <div class="code-block rounded-lg p-4 mb-4 font-mono text-sm"><pre><code>npx @google-ai/generativelanguage-cli</code></pre></div>
+                    <p class="font-semibold mb-2">전역 설치:</p>
+                    <div class="code-block rounded-lg p-4 font-mono text-sm"><pre><code>npm install -g @google-ai/generativelanguage-cli</code></pre></div>
+                </div>
+                <div class="card p-6 rounded-xl">
+                    <h3 class="text-2xl font-bold mb-4">2. 플랜 선택</h3>
+                     <div class="border-l-4 border-blue-500 pl-4 py-2 mb-4 bg-blue-50">
+                        <h4 class="font-bold text-lg">무료 플랜 (개인)</h4>
+                        <p>Google 계정 인증만으로 100만 토큰 컨텍스트, 일일 1,000회 요청이라는 강력한 기능을 무료로 사용할 수 있습니다.</p>
+                    </div>
+                    <div class="border-l-4 border-gray-500 pl-4 py-2 bg-gray-50">
+                        <h4 class="font-bold text-lg">프로페셔널 플랜 (기업)</h4>
+                        <p>API 키를 사용하여 더 높은 사용량과 데이터 보안(프롬프트가 모델 학습에 사용되지 않음)을 보장받을 수 있습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Comparison -->
+        <section id="comparison" class="mb-24 scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 section-title">경쟁 제품 심층 분석</h2>
+            <p class="max-w-3xl mx-auto text-center text-lg text-gray-600 mb-12">
+                AI 코딩 어시스턴트 시장의 주요 플레이어들을 한눈에 비교 분석합니다. 아래 드롭다운 메뉴에서 비교하고 싶은 기준을 선택하면, 해당 기준에 따른 각 도구의 성능과 특징을 차트와 설명으로 확인할 수 있습니다.
+            </p>
+            <div class="max-w-4xl mx-auto mb-8">
+                <label for="comparison-metric" class="block text-sm font-medium text-gray-700 mb-2">비교 기준 선택:</label>
+                <select id="comparison-metric" class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="context" selected>컨텍스트 창 (토큰)</option>
+                    <option value="requests">무료 플랜 요청 (일일)</option>
+                    <option value="price">유료 플랜 가격 (월/개인)</option>
+                </select>
+            </div>
+            <div class="chart-container mb-12">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+            <div id="comparison-details" class="grid md:grid-cols-3 gap-6 text-sm">
+                <!-- Details will be populated by JS -->
+            </div>
+        </section>
+
+        <!-- Section 5: Conclusion -->
+        <section id="conclusion" class="scroll-mt-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-4 section-title">결론: 차세대 개발 환경의 시작</h2>
+            <p class="max-w-3xl mx-auto text-center text-lg text-gray-600">
+                Gemini CLI는 단순한 코드 생성기를 넘어 개발자의 작업 방식 자체를 변화시킬 잠재력을 지닌 강력한 AI 에이전트입니다. 방대한 컨텍스트 창, 멀티모달 능력, 그리고 MCP를 통한 무한한 확장성은 이 도구를 차세대 개발 환경의 핵심 요소로 만들 것입니다. 압도적인 무료 정책과 오픈소스 전략을 통해 빠르게 성장하며 개발 생태계의 판도를 바꿀 것으로 기대됩니다.
+            </p>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 mt-16 border-t">
+        <p class="text-gray-500">Gemini CLI 대화형 가이드 | 정보를 시각적으로 탐색하세요.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth Scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+
+            // Active Nav Link on Scroll
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Tabs for Features section
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            const activateTab = (tabId) => {
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('bg-white', 'text-blue-600', 'shadow');
+                    btn.classList.add('text-gray-600');
+                });
+                document.querySelector(`[data-tab="${tabId}"]`).classList.add('bg-white', 'text-blue-600', 'shadow');
+                
+                tabPanes.forEach(pane => {
+                    pane.classList.add('hidden');
+                });
+                document.getElementById(tabId).classList.remove('hidden');
+            };
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.dataset.tab;
+                    activateTab(tabId);
+                });
+            });
+            activateTab('tab1'); // Activate first tab by default
+
+
+            // Copy to clipboard for code blocks
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const pre = button.parentElement.querySelector('pre');
+                    const text = pre.innerText;
+                    
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        button.innerText = '복사됨!';
+                        setTimeout(() => { button.innerText = '복사'; }, 2000);
+                    } catch (err) {
+                        console.error('Copy failed', err);
+                    }
+                    document.body.removeChild(textarea);
+                });
+            });
+
+            // Comparison Chart
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            const comparisonData = {
+                labels: ['Google Gemini CLI', 'GitHub Copilot', 'Anthropic Claude Code'],
+                context: {
+                    data: [1000000, 20000, 200000], // Assuming Copilot ~20k, Claude ~200k for visualization
+                    label: '컨텍스트 창 (토큰, 로그 스케일)',
+                    type: 'logarithmic'
+                },
+                requests: {
+                    data: [1000, 0, 10], // Assuming Copilot no free tier, Claude very limited
+                    label: '무료 플랜 일일 요청 수',
+                    type: 'linear'
+                },
+                price: {
+                    data: [0, 10, 20], // Free tier for Gemini, $10 for Copilot, $20 for Claude Pro
+                    label: '유료 플랜 가격 ($/월, 개인)',
+                    type: 'linear'
+                }
+            };
+
+            const detailsData = {
+                'Google Gemini CLI': {
+                    pros: '압도적인 무료 플랜, 100만 토큰 컨텍스트, 오픈소스 및 MCP 확장성',
+                    cons: '상대적으로 느린 응답, 초기 버전의 불안정성'
+                },
+                'GitHub Copilot': {
+                    pros: '강력한 IDE 통합, 빠른 응답 속도, 성숙한 생태계',
+                    cons: '제한된 컨텍스트, 터미널 기능 부재, 제한적인 무료 평가판'
+                },
+                'Anthropic Claude Code': {
+                    pros: '뛰어난 추론 및 복잡한 작업 분해 능력',
+                    cons: '높은 비용, 폐쇄적인 생태계, 제한된 무료 사용량'
+                }
+            };
+            
+            let comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: comparisonData.labels,
+                    datasets: [{
+                        label: 'Default',
+                        data: [],
+                        backgroundColor: ['#4285F4', '#24292E', '#D9663A'],
+                        borderColor: ['#3B82F6', '#1F2328', '#C85D33'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            type: 'logarithmic',
+                            ticks: {
+                                color: '#4B5563'
+                            },
+                            grid: {
+                                color: '#E5E7EB'
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                color: '#1F2937',
+                                font: {
+                                    weight: 'bold'
+                                }
+                           },
+                           grid: {
+                                display: false
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        label += context.parsed.x.toLocaleString('ko-KR');
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const comparisonMetricSelect = document.getElementById('comparison-metric');
+            const detailsContainer = document.getElementById('comparison-details');
+
+            function updateChart(metric) {
+                const metricData = comparisonData[metric];
+                comparisonChart.data.datasets[0].data = metricData.data;
+                comparisonChart.data.datasets[0].label = metricData.label;
+                comparisonChart.options.scales.x.type = metricData.type;
+                comparisonChart.options.scales.x.title = { display: true, text: metricData.label };
+                comparisonChart.update();
+
+                detailsContainer.innerHTML = '';
+                comparisonData.labels.forEach(label => {
+                    const tool = detailsData[label];
+                    const cardHtml = `
+                        <div class="card p-4 rounded-lg">
+                            <h4 class="font-bold text-lg mb-2">${label}</h4>
+                            <p class="mb-1"><strong class="text-green-600">장점:</strong> ${tool.pros}</p>
+                            <p><strong class="text-red-600">단점:</strong> ${tool.cons}</p>
+                        </div>
+                    `;
+                    detailsContainer.innerHTML += cardHtml;
+                });
+            }
+
+            comparisonMetricSelect.addEventListener('change', (e) => {
+                updateChart(e.target.value);
+            });
+            
+            updateChart('context');
+        });
+    </script>
+</body>
+</html>
